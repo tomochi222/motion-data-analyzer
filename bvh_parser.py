@@ -1,6 +1,8 @@
 # coding: utf-8
 # parse bvh(BioVision Hierarchical) file for python 3
 import re
+import pandas as pd
+import copy
 
 ##################################################
 ##################################################
@@ -19,6 +21,9 @@ class bvh:
 		self.motions = []
 		self.reserved      = [ "HIERARCHY", "ROOT", "OFFSET", "CHANNELS", "MOTION" ]
 		self.channel_names = [ "Xposition", "Yposition", "Zposition",  "Zrotation", "Xrotation",  "Yrotation" ]
+		self.joints_channel_names = []
+		self.data = 0
+		self.df_columns = []
 
 		print(type(self.bone_context))
 
@@ -38,6 +43,8 @@ class bvh:
 		self.parse_hierarchy(tokens)
 		self.current_token = self.current_token + 1
 		self.parse_motion(tokens)
+		self.create_name_for_pandas()
+		self.create_dataframe()
 
 ##################################################
 	def new_bone(self, parent, name):
@@ -184,4 +191,31 @@ class bvh:
 			frame_time = frame_time + frame_rate
 		print('bvh parsing complete !!!!')
 ##################################################
+
+	def create_name_for_pandas(self):
+		motion_data = self.motions[0][1]
+		self.df_columns.append('time')
+		for joint_name, channel_name, tmp in motion_data:
+			# print('joint: ',joint_name, ' channel: ', channel_name, 'tmp: ', tmp)
+			tmp_array = [joint_name, channel_name]
+			self.joints_channel_names.append(tmp_array)
+			tmp_name = joint_name+'-'+channel_name
+			self.df_columns.append(tmp_name)
+
+	def create_dataframe(self):
+		df_array = []
+		tmp_array = []
+		motion_data = self.motions[0][1]
+		for i in range(len(motion_data)+1):
+			tmp_array.append(0)		
+
+		for motion_data_array in self.motions:
+			tmp_array_copy = copy.deepcopy(tmp_array)
+			tmp_array_copy[0] = motion_data_array[0]
+			for joint_name, channel_name, tmp in motion_data_array[1]:
+				index = self.joints_channel_names.index([joint_name,channel_name])
+				tmp_array_copy[index+1] = tmp
+			df_array.append(tmp_array_copy)
+		print(df_array)
+		self.data = pd.DataFrame(df_array,columns=self.df_columns)
 ##################################################
