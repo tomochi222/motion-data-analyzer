@@ -41,6 +41,7 @@ class bvh:
 		bvh_file.close()
 		tokens, remainder = scanner.scan(bvh)
 		self.parse_hierarchy(tokens)
+		print(self.bone_context,self.motion_channels)
 		self.current_token = self.current_token + 1
 		self.parse_motion(tokens)
 		self.create_name_for_pandas()
@@ -152,6 +153,8 @@ class bvh:
 		channels, self.current_token = self.read_channels(bvh, self.current_token)
 		root_bone["offsets"]  = offsets
 		root_bone["channels"] = channels
+		for channel in channels:
+			self.motion_channels.append((root_name, channel))
 		self.skeleton[root_name] = root_bone
 		self.push_bone_context(root_name)
 #		print("Root ", root_bone)
@@ -182,11 +185,13 @@ class bvh:
 		frame_time = 0.0
 		self.motions = [ () ] * frame_count
 		print('Parsing now ...')
+		self.current_token += 1
+
 		for i in range(0, frame_count):
 			channel_values = []
 			for channel in self.motion_channels:
 				channel_values.append((channel[0], channel[1], float(bvh[self.current_token][1])))
-				self.current_token = self.current_token + 1
+				self.current_token += 1
 			self.motions[i] = (frame_time, channel_values)
 			frame_time = frame_time + frame_rate
 		print('bvh parsing complete !!!!')
@@ -216,6 +221,7 @@ class bvh:
 				index = self.joints_channel_names.index([joint_name,channel_name])
 				tmp_array_copy[index+1] = tmp
 			df_array.append(tmp_array_copy)
-		print(df_array)
+		# print(df_array)
 		self.data = pd.DataFrame(df_array,columns=self.df_columns)
+		# self.data.to_csv('test2.csv')
 ##################################################
