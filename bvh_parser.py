@@ -41,7 +41,6 @@ class bvh:
 		bvh_file.close()
 		tokens, remainder = scanner.scan(bvh)
 		self.parse_hierarchy(tokens)
-		print(self.bone_context,self.motion_channels)
 		self.current_token = self.current_token + 1
 		self.parse_motion(tokens)
 		self.create_name_for_pandas()
@@ -157,7 +156,6 @@ class bvh:
 			self.motion_channels.append((root_name, channel))
 		self.skeleton[root_name] = root_bone
 		self.push_bone_context(root_name)
-#		print("Root ", root_bone)
 		while(bvh[self.current_token][1] == "JOINT"):
 			self.current_token = self.parse_joint(bvh, self.current_token)
 
@@ -201,7 +199,6 @@ class bvh:
 		motion_data = self.motions[0][1]
 		self.df_columns.append('time')
 		for joint_name, channel_name, tmp in motion_data:
-			# print('joint: ',joint_name, ' channel: ', channel_name, 'tmp: ', tmp)
 			tmp_array = [joint_name, channel_name]
 			self.joints_channel_names.append(tmp_array)
 			tmp_name = joint_name+'-'+channel_name
@@ -221,7 +218,5 @@ class bvh:
 				index = self.joints_channel_names.index([joint_name,channel_name])
 				tmp_array_copy[index+1] = tmp
 			df_array.append(tmp_array_copy)
-		# print(df_array)
 		self.data = pd.DataFrame(df_array,columns=self.df_columns)
-		# self.data.to_csv('test2.csv')
 ##################################################
