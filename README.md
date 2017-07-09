@@ -13,9 +13,7 @@ If the constructor is given a file path as an argument, analysis will be execute
 
 ## Installation/Minimum Requirement
 
-	$ git clone https://github.com/keit0222/bvh_parser.git
-	$ cd bvh_parser
-	$ python main.py
+	$ pip install git+https://github.com/keit0222/bvh-file-parser.git
 
 - python 3.x.x
 
