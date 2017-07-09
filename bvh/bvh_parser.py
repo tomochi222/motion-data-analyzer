@@ -209,7 +209,7 @@ class bvh:
 		tmp_array = []
 		motion_data = self.motions[0][1]
 		for i in range(len(motion_data)+1):
-			tmp_array.append(0)		
+			tmp_array.append(0)
 
 		for motion_data_array in self.motions:
 			tmp_array_copy = copy.deepcopy(tmp_array)
