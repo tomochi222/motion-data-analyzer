@@ -21,6 +21,10 @@ If the constructor is given a file path as an argument, analysis will be execute
 
 - python 3.x.x
 
+### example
+
+`$ python example.py`
+
 ## Author/Contributors
 
 facebook: [Keita Tomochika](http://www.facebook.com/keita.tomochika)
