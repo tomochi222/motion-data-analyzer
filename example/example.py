@@ -1,6 +1,6 @@
 # coding: utf-8
 ## bvh parser sample script
-import bvh_parser as bp
+from bvh import bvh_parser as bp
 
 if __name__ == "__main__":
 	# parse bvh file
