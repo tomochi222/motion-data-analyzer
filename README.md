@@ -15,6 +15,10 @@ If the constructor is given a file path as an argument, analysis will be execute
 
 	$ pip install git+https://github.com/keit0222/bvh-file-parser.git
 
+### upgrade library
+
+	$ pip install --upgrade git+https://github.com/keit0222/bvh-file-parser.git
+
 - python 3.x.x
 
 ## Author/Contributors
