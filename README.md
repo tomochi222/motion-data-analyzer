@@ -1,23 +1,41 @@
-# Parse BVH (BioVision Hierarchical) motion capture files
-simple bvh file parser module for python3.
+# Analyze motion capture data
+This library support to analyze motion capture data.
 
 ## Description
 
-This is a module and sample script for parsing the bvh file.
-If the constructor is given a file path as an argument, analysis will be executed. The analysis result is stored in the variable motions.
-[About BVH (Biovision Hierarchical) format](https://en.wikipedia.org/wiki/Biovision_Hierarchy)
+This is a module and sample script for motion data analysis.
 
 ## Features
 
-- Easy Parsing BVH file
+- Easily analyze various motion data
+	- Easy to parse
+- Implementing
+	- Visualization
+	- Comparison of data measured simultaneously by different sensors
+	- Convert to another supported format and another equipment-like export data
+
+### Support equipment
+- Now supporting
+	- [Optitrack](http://optitrack.com/)
+	- [Perception Neuron](https://www.noitom.com/index.php/solutions/perception-neuron)
+
+### Supporting motion format
+- Now supporting
+	- BVH (BioVision Hierarchical) file
+		- [About BVH (Biovision Hierarchical) format](https://en.wikipedia.org/wiki/Biovision_Hierarchy)
+	- C3D file
+- Future support
+	- FBX
+	- TRX
+	- CSV
 
 ## Installation/Minimum Requirement
 
-	$ pip install git+https://github.com/keit0222/bvh-file-parser.git
+	$ pip install git+https://github.com/keit0222/motion-data-analyzer.git
 
 ### upgrade library
 
-	$ pip install --upgrade git+https://github.com/keit0222/bvh-file-parser.git
+	$ pip install --upgrade git+https://github.com/keit0222/motion-data-analyzer.git
 
 - python 3.x.x
 
