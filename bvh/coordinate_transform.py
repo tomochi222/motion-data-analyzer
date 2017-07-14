@@ -37,12 +37,17 @@ def get_center_of_rotation_vec(rotaion_matrix):
 def get_rotation_angle(rotation_matrix):
     return np.arccos(((np.trace(rotation_matrix)-1)/2))
 
-def get_rotation_info(rotation_matrix):
+def show_rotation_info(rotation_matrix):
     vec = get_center_of_rotation_vec(rotation_matrix)
     theta = get_rotation_angle(rotation_matrix)
     print('########### Rotaion matrix information ##########')
     print('The center of rotation vector: ',vec)
     print('Rotation angle', theta/np.pi*180, '[deg]')
+
+def get_rotation_info(rotation_matrix):
+    vec = get_center_of_rotation_vec(rotation_matrix)
+    theta = get_rotation_angle(rotation_matrix)
+    return [vec,rad2deg(theta)]
 
 def get_rodrigues_rotation(n, theta): # n: the center of rotation vector, theta[rad]
     n = np.array(n)
@@ -80,3 +85,9 @@ def get_quaternion(n, theta):
     n = n/np.linalg.norm(n)
     tmp = np.sin(theta/2.)*np.array(n)
     return np.array([np.cos(theta/2.),tmp[0],tmp[1],tmp[2]])
+
+def deg2rad(degree):
+    return degree/180*np.pi
+
+def rad2deg(radian):
+    return radian/np.pi*180
