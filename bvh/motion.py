@@ -38,10 +38,24 @@ class Motion(object):
                             mat[j] = get_rotation_z(deg2rad(self.motion.data[column_name].values[j]))*mat[j]
 
             degree_list = []
+            rotation_axis_vec = []
             for one_mat in mat:
                 vec,deg = get_rotation_info(one_mat)
                 degree_list.append(deg)
-            self.motion.data[joint+'-rotation'] = degree_list
-        print(self.motion.data)
+                rotation_axis_vec.append(vec)
+            self.motion.data[joint+'-Rotation'] = degree_list
+            self.motion.data[joint+'-Axis'] = rotation_axis_vec
+
+    def get_axis(self, joint):
+        return self.motion.data[joint+'-Axis'].values
+
+    def get_angle(self, joint):
+        return self.motion.data[joint+'-Rotation'].values
+
+    def get_joint_name(self):
+        joint_names = []
+        for joint in self.motion.skeleton:
+            joint_names.append(joint)
+        return joint_names
 
 motion = Motion('data\\','Example1.bvh')
