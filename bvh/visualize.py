@@ -1,17 +1,13 @@
 
 # coding: utf-8
 
-import bvh_parser as bp
-from coordinate_transform import *
+from motion import Motion
 
-class Motion(object):
+class Visualize(Motion):
     def __init__(self, file_dir, filename):
-        self.file_dir = file_dir
-        self.filename = filename
-        ext = filename.split('.')
-        ext = ext[len(ext)-1]
-        if ext == 'bvh':
-            motion = bp.bvh(file_dir+filename)
-        print(motion.data)
+        super().__init__(file_dir,filename)
+
+viz = Visualize('data\\','Example1.bvh')
+print(viz.motion.data)
 
 # class Animation():

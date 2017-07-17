@@ -58,4 +58,5 @@ class Motion(object):
             joint_names.append(joint)
         return joint_names
 
-motion = Motion('data\\','Example1.bvh')
+    def get_time(self):
+        return self.motion.data['time'].values
