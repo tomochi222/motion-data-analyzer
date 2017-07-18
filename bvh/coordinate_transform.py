@@ -19,6 +19,22 @@ def get_rotation_z(gamma): # gamma[rad]
                      [np.sin(gamma), np.cos(gamma), 0.],
                      [0., 0., 1.]])
 
+def get_rotation(axis_name,theta): # theta[rad]
+    if axis_name == 'x' or axis_name == 'X':
+        return np.array([[1., 0., 0.],
+                         [0., np.cos(theta), -np.sin(theta)],
+                         [0., np.sin(theta), np.cos(theta)]])
+    elif axis_name == 'y' or axis_name == 'Y':
+        return np.array([[np.cos(theta), 0., np.sin(theta)],
+                         [0., 1., 0.],
+                         [-np.sin(theta), 0., np.cos(theta)]])
+    elif axis_name == 'z' or axis_name == 'Z':
+        return np.array([[np.cos(theta), -np.sin(theta), 0.],
+                         [np.sin(theta), np.cos(theta), 0.],
+                         [0., 0., 1.]])
+    else:
+        return None
+
 def get_euler_rotation(alfa,beta,gamma):
     return get_rotation_x(alfa)*get_rotation_y(beta)*get_rotation_z(gamma)
 
@@ -42,7 +58,10 @@ def show_rotation_info(rotation_matrix):
     theta = get_rotation_angle(rotation_matrix)
     print('########### Rotaion matrix information ##########')
     print('The center of rotation vector: ',vec)
-    print('Rotation angle', theta/np.pi*180, '[deg]')
+    print('Rotation angle', rad2deg(theta), '[deg]')
+
+def get_position_info(simultaneous_trans_matrix):
+    return np.array([simultaneous_trans_matrix[0,3],simultaneous_trans_matrix[1,3],simultaneous_trans_matrix[2,3]])
 
 def get_rotation_info(rotation_matrix):
     vec = get_center_of_rotation_vec(rotation_matrix)
@@ -85,6 +104,14 @@ def get_quaternion(n, theta):
     n = n/np.linalg.norm(n)
     tmp = np.sin(theta/2.)*np.array(n)
     return np.array([np.cos(theta/2.),tmp[0],tmp[1],tmp[2]])
+
+# rotation -> transfer
+def get_simultaneous_trans_matrix(R, q):
+    tmp = np.array([[R[0,0], R[0,1], R[0,2], q[0]],
+                     [R[1,0], R[1,1], R[1,2], q[1]],
+                     [R[2,0], R[2,1], R[2,2], q[2]],
+                     [0.,0.,0.,1]])
+    return tmp
 
 def deg2rad(degree):
     return degree/180*np.pi
