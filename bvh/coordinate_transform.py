@@ -106,12 +106,17 @@ def get_quaternion(n, theta):
     return np.array([np.cos(theta/2.),tmp[0],tmp[1],tmp[2]])
 
 # rotation -> transfer
-def get_simultaneous_trans_matrix(R, q):
-    tmp = np.array([[R[0,0], R[0,1], R[0,2], q[0]],
+def get_simultaneous_matrix(R, q):
+    return np.array([[R[0,0], R[0,1], R[0,2], q[0]],
                      [R[1,0], R[1,1], R[1,2], q[1]],
                      [R[2,0], R[2,1], R[2,2], q[2]],
                      [0.,0.,0.,1]])
-    return tmp
+
+def get_simultaneous_trans_matrix(q):
+    return np.array([[0., 0., 0., q[0]],
+                     [0., 0., 0., q[1]],
+                     [0., 0., 0., q[2]],
+                     [0.,0.,0.,1]])
 
 def deg2rad(degree):
     return degree/180*np.pi

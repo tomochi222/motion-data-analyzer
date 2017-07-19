@@ -1,0 +1,54 @@
+digraph {
+	node [shape=circle]
+	Head [label=Head]
+	Neck [label=Neck]
+	LeftToeBase [label=LeftToeBase]
+	LeftToeBase_Nub [label=LeftToeBase_Nub]
+	Head_Nub [label=Head_Nub]
+	LeftShoulder [label=LeftShoulder]
+	RightHand_Nub [label=RightHand_Nub]
+	RightFoot [label=RightFoot]
+	LeftLeg [label=LeftLeg]
+	RightShoulder [label=RightShoulder]
+	LeftUpLeg [label=LeftUpLeg]
+	RightToeBase [label=RightToeBase]
+	Spine1 [label=Spine1]
+	RightToeBase_Nub [label=RightToeBase_Nub]
+	Hips [label=Hips]
+	RightLeg [label=RightLeg]
+	LeftForeArm [label=LeftForeArm]
+	RightArm [label=RightArm]
+	LeftHand_Nub [label=LeftHand_Nub]
+	LeftFoot [label=LeftFoot]
+	LeftHand [label=LeftHand]
+	RightUpLeg [label=RightUpLeg]
+	RightForeArm [label=RightForeArm]
+	Spine [label=Spine]
+	LeftArm [label=LeftArm]
+	RightHand [label=RightHand]
+	Hips -> Spine
+	Spine -> Spine1
+	Spine1 -> Neck
+	Neck -> Head
+	Hips -> LeftUpLeg
+	LeftUpLeg -> LeftLeg
+	LeftLeg -> LeftFoot
+	LeftFoot -> LeftToeBase
+	LeftToeBase -> LeftToeBase_Nub
+	Head -> Head_Nub
+	Spine1 -> LeftShoulder
+	Spine1 -> RightShoulder
+	RightShoulder -> RightArm
+	RightArm -> RightForeArm
+	RightForeArm -> RightHand
+	RightHand -> RightHand_Nub
+	Hips -> RightUpLeg
+	RightUpLeg -> RightLeg
+	RightLeg -> RightFoot
+	RightFoot -> RightToeBase
+	RightToeBase -> RightToeBase_Nub
+	LeftShoulder -> LeftArm
+	LeftArm -> LeftForeArm
+	LeftForeArm -> LeftHand
+	LeftHand -> LeftHand_Nub
+}

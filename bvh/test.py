@@ -7,5 +7,5 @@ test = {'LeftToeBase_Nub': {'parent': 'LeftToeBase', 'offsets': [-0.0, 0.0, 0.03
 
 # print(test['LeftToeBase_Nub']['offsets'])
 
-tmp = get_rotation_z(deg2rad(0.369103))*get_rotation_x(deg2rad(3.822575))*get_rotation_y(deg2rad(-41.719521)) 
-print(tmp)
+tmp = get_rotation_z(deg2rad(0.369103))*get_rotation_x(deg2rad(3.822575))*get_rotation_y(deg2rad(-41.719521))
+#print(tmp)

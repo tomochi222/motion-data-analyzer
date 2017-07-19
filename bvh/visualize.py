@@ -19,18 +19,26 @@ class Visualize(MotionVariables):
         self.ax.set_zlabel('z')
 
         for i in range(len(self.motion.get_time())):
+            self.motion.get_joint_info(i)
             for joint in self.motion.get_joint_names():
-                self.set_motion(joint, i, 1)
-            plt.pause(0.5)
+                self.set_motion2(joint, 1)
+            self.ax.set_xlim([-1.0,1.0])
+            self.ax.set_ylim([-1.0,1.0])
+            self.ax.set_zlim([-1.0,1.0])
+            plt.pause(0.01)
             self.ax.clear()
 
     def set_motion(self, joint, frame, scale):
         pos = self.motion.get_position(joint, frame, scale).tolist()
         parent_pos = self.motion.get_position(self.motion.get_parent(joint), frame, scale).tolist()
-        print(pos,parent_pos)
         vec = [[parent_pos[0], pos[0]],[parent_pos[1], pos[1]],[parent_pos[2], pos[2]]]
         self.ax.plot(vec[0],vec[1],vec[2], "o-", color="#00aa00", ms=4, mew=0.5)
 
+    def set_motion2(self, joint, scale):
+        pos = self.motion.get_joint_position(joint, scale)
+        parent_pos = self.motion.get_joint_position(self.motion.get_parent(joint), scale)
+        vec = [[parent_pos[0], pos[0]],[parent_pos[1], pos[1]],[parent_pos[2], pos[2]]]
+        self.ax.plot(vec[0],vec[1],vec[2], "o-", color="#00aa00", ms=4, mew=0.5)
 
 viz = Visualize('data\\','test_optitrack.bvh')
 
