@@ -61,6 +61,11 @@ def show_rotation_info(rotation_matrix):
 def get_position_info(simultaneous_trans_matrix):
     return np.array([simultaneous_trans_matrix[0,3],simultaneous_trans_matrix[1,3],simultaneous_trans_matrix[2,3]])
 
+def get_rotation_matrix(simultaneous_trans_matrix):
+    return np.array([[simultaneous_trans_matrix[0,0],simultaneous_trans_matrix[0,1],simultaneous_trans_matrix[0,2]],
+                     [simultaneous_trans_matrix[1,0],simultaneous_trans_matrix[1,1],simultaneous_trans_matrix[1,2]],
+                     [simultaneous_trans_matrix[2,0],simultaneous_trans_matrix[2,1],simultaneous_trans_matrix[2,2]]])
+
 def get_rotation_info(rotation_matrix):
     vec = get_center_of_rotation_vec(rotation_matrix)
     theta = get_rotation_angle(rotation_matrix)
