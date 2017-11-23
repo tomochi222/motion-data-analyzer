@@ -102,5 +102,7 @@ ENV/
 .mypy_cache/
 
 # additional
-.ipynb
-.csv
+*.ipynb
+*.csv
+
+sample/
