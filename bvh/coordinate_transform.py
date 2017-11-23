@@ -4,6 +4,8 @@
 import numpy as np
 from scipy import linalg
 
+np.set_printoptions(formatter={'float': '{: 0.3f}'.format}) #桁を揃える
+
 def get_rotation_x(alfa): # alfa[rad]
     return np.array([[1., 0., 0.],
                      [0., np.cos(alfa), -np.sin(alfa)],
@@ -21,25 +23,21 @@ def get_rotation_z(gamma): # gamma[rad]
 
 def get_rotation(axis_name,theta): # theta[rad]
     if axis_name == 'x' or axis_name == 'X':
-        return np.array([[1., 0., 0.],
-                         [0., np.cos(theta), -np.sin(theta)],
-                         [0., np.sin(theta), np.cos(theta)]])
+        return get_rotation_x(theta)
     elif axis_name == 'y' or axis_name == 'Y':
-        return np.array([[np.cos(theta), 0., np.sin(theta)],
-                         [0., 1., 0.],
-                         [-np.sin(theta), 0., np.cos(theta)]])
+        return get_rotation_y(theta)
     elif axis_name == 'z' or axis_name == 'Z':
-        return np.array([[np.cos(theta), -np.sin(theta), 0.],
-                         [np.sin(theta), np.cos(theta), 0.],
-                         [0., 0., 1.]])
+        return get_rotation_z(theta)
     else:
         return None
 
-def get_euler_rotation(alfa,beta,gamma):
-    return get_rotation_x(alfa)*get_rotation_y(beta)*get_rotation_z(gamma)
+def get_euler_rotation(alfa,beta,gamma): # [rad]
+    tmp = np.dot(get_rotation_z(alfa),get_rotation_x(beta))
+    return np.dot(tmp, get_rotation_z(gamma))
 
-def get_roll_pitch_yaw_rotation(roll,pitch,yaw):
-    return get_rotation_z(yaw)*get_rotation_y(pitch)*get_rotation_x(roll)
+def get_roll_pitch_yaw_rotation(roll,pitch,yaw): # [rad]
+    tmp = np.dot(get_rotation_z(yaw), get_rotation_y(pitch))
+    return np.dot(tmp, get_rotation_x(roll))
 
 def get_center_of_rotation_vec(rotaion_matrix):
     # la,v = np.linalg.eig(rotaion_matrix)
@@ -113,9 +111,9 @@ def get_simultaneous_matrix(R, q):
                      [0.,0.,0.,1]])
 
 def get_simultaneous_trans_matrix(q):
-    return np.array([[0., 0., 0., q[0]],
-                     [0., 0., 0., q[1]],
-                     [0., 0., 0., q[2]],
+    return np.array([[1., 0., 0., q[0]],
+                     [0., 1., 0., q[1]],
+                     [0., 0., 1., q[2]],
                      [0.,0.,0.,1]])
 
 def deg2rad(degree):

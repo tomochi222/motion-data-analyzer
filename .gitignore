@@ -104,5 +104,6 @@ ENV/
 # additional
 *.ipynb
 *.csv
+test.py
 
 sample/
