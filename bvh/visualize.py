@@ -25,7 +25,7 @@ class Visualize(MotionVariables):
             self.ax.set_xlim([-1.0,1.0])
             self.ax.set_ylim([-1.0,1.0])
             self.ax.set_zlim([-1.0,1.0])
-            plt.pause(0.01)
+            plt.pause(0.008)
             self.ax.clear()
 
     def set_motion(self, joint, frame, scale):

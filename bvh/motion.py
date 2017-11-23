@@ -16,9 +16,6 @@ class Motion(object):
         self.file_dir = file_dir
         self.filename = filename
 
-        channels = ['Xposition', 'Yposition', 'Zposition',
-                    'Xrotation', 'Yrotation', 'Zrotation']
-
         ext = filename.split('.')
         ext = ext[len(ext)-1]
         if ext == 'bvh':
@@ -35,6 +32,7 @@ class Motion(object):
         self.joint_info_mat = defaultdict(list)
         self.joint_info = defaultdict(list)
         self.get_joint_info_matrix(self.joint_hierarchy_tree, frame)
+        print(self.joint_info)
         self.pos_dict = {}
         self.extract_joint_position()
 
@@ -49,15 +47,16 @@ class Motion(object):
 
             #
             self.joint_hierarchy = self.get_joint_hierarchy(target)
+            # pprint(self.joint_hierarchy)
 
             # 処理のコード
             # Check order list have 'Rotation' information
             order = self.get_channels(target)
             rotation_check = len([l for l in order if 'rotation' in l])
+            # print(order, rotation_check)
 
             # Initialize transformation matrix
             rotation_mat_tmp = np.identity(3)
-            mat_tmp = np.identity(4)
             mat = np.identity(4)
 
             # Get rotation order information for target joint
@@ -65,17 +64,20 @@ class Motion(object):
             for channel in order:
                 if 'rotation' in channel:
                     rotation_order.append(target+'-'+channel)
+            # print(rotation_order)
 
             # Prepare simultaneous transformation matrix for target joint
             if any(('rotation' in x for x in order)) == True:
                 for tmp in rotation_order:
-                    rotation_mat_tmp = np.dot(get_rotation(tmp[len(tmp)-9],deg2rad(self.motion.data[tmp].values[frame])),rotation_mat_tmp)
+                    rotation_mat_tmp = np.dot(rotation_mat_tmp, get_rotation(tmp[len(tmp)-9],deg2rad(self.motion.data[tmp].values[frame])))
 
-            mat_tmp = np.dot(get_simultaneous_matrix(rotation_mat_tmp,self.get_offsets(target)),mat_tmp)
+            # ここまでOK
+            # 下は何をしようとしているのだろう。。
+            mat_tmp = get_simultaneous_matrix(rotation_mat_tmp,self.get_offsets(target))
             self.joint_info_mat[target].append([mat_tmp])
 
             for joint in self.joint_hierarchy:
-                mat = np.dot(dict(self.joint_info_mat)[joint][0][0],mat)
+                mat = np.dot(mat, dict(self.joint_info_mat)[joint][0][0])
             self.joint_info[target].append(mat)
 
             self.get_joint_info_matrix(joint_tree[target],frame)
