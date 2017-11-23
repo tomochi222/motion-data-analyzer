@@ -4,7 +4,10 @@
 import bvh_parser as bp
 from coordinate_transform import *
 
-from graphviz import Digraph
+try:
+    from graphviz import Digraph
+except:
+    print("Can't import graphviz. graphviz is not existance")
 from collections import defaultdict
 from pprint import pprint
 

@@ -70,6 +70,7 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+
 # pyenv
 .python-version
 
@@ -99,3 +100,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# additional
+.ipynb
+.csv
