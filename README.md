@@ -9,8 +9,13 @@ This is a module and sample script for motion data analysis.
 
 - Easily analyze various motion data
 	- Easy to parse
-- Implementing
+	- Get each joint information
+		- joint rotation angle
+		- joint rotation vector
+		- joint position
 	- Visualization
+	- Absorb the difference between devices
+- Implementing
 	- Comparison of data measured simultaneously by different sensors
 	- Convert to another supported format and another equipment-like export data
 
@@ -23,8 +28,8 @@ This is a module and sample script for motion data analysis.
 - Now supporting
 	- BVH (BioVision Hierarchical) file
 		- [About BVH (Biovision Hierarchical) format](https://en.wikipedia.org/wiki/Biovision_Hierarchy)
-	- C3D file
 - Future support
+	- C3D file
 	- FBX
 	- TRX
 	- CSV
