@@ -11,6 +11,8 @@ except:
 from collections import defaultdict
 from pprint import pprint
 import pandas as pd
+import pickle
+import os
 
 class Motion(object):
     def __init__(self, file_dir, filename):
@@ -25,9 +27,18 @@ class Motion(object):
 
         self.extract_joint_names()
         self.get_joint_hierarchy_tree()
-        self.create_joint_info_frame()
 
-        # self.export_joint_hierarchy()
+        savepath = self.file_dir+self.filename.split('.')[0]
+        if not os.path.exists(savepath):
+            print("First analysis start!!!")
+            
+            self.create_joint_info_frame()
+            with open(savepath, mode='wb') as f:
+                pickle.dump(self.joint_info_dataframe, f, protocol=2)
+        else:
+            print("Loading analyzed data ...")
+            with open(savepath, mode='rb') as f:
+                self.joint_info_dataframe = pickle.load(f)
 
     def get_joint_info(self, frame):
         self.joint_info_mat = defaultdict(list)
@@ -86,7 +97,7 @@ class Motion(object):
         rotation_axis_vec_lists = {}
         position_lists = {}
         
-        print("Analyzing motion data ..", end="")
+        print("Analyzing motion data ..", end="", flush=True)
         for joint in self.get_joint_names():
             degree_lists[joint] = []
             rotation_axis_vec_lists[joint] = []
@@ -94,12 +105,13 @@ class Motion(object):
 
         for i in range(self.data_size):
             if i%100 == 0:
-                print("..", end="")
+                print("..", end="", flush=True)
             self.get_joint_info(i)
             for joint in self.get_joint_names():
                 degree_lists[joint].append(self.angle_dict[joint])
                 rotation_axis_vec_lists[joint].append(self.axis_dict[joint])
                 position_lists[joint].append(self.pos_dict[joint])
+        print("")
 
         tmp_dict = {}
         for joint in self.get_joint_names():
@@ -107,6 +119,7 @@ class Motion(object):
             tmp_dict[joint+'-axis'] = rotation_axis_vec_lists[joint]
             tmp_dict[joint+'-position'] = position_lists[joint]
         self.joint_info_dataframe = pd.DataFrame.from_dict(tmp_dict)
+        print("analysis ended!!!")
 
     def get_joint_hierarchy_tree(self):
         self.joint_hierarchy_tree = self.tree()
@@ -212,3 +225,17 @@ class Motion(object):
             del angle_df[joint+'-axis']
             del angle_df[joint+'-position']
         angle_df.to_csv(savename)
+
+    def save_axis_data_to_csv(self, savename="tmp.csv"):
+        axis_df = self.joint_info_dataframe.copy()
+        for joint in self.get_joint_names():
+            del axis_df[joint+'-rotation']
+            del axis_df[joint+'-position']
+        axis_df.to_csv(savename)
+
+    def save_position_data_to_csv(self, savename="tmp.csv"):
+        pos_df = self.joint_info_dataframe.copy()
+        for joint in self.get_joint_names():
+            del pos_df[joint+'-axis']
+            del pos_df[joint+'-rotation']
+        pos_df.to_csv(savename)
