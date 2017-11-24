@@ -32,7 +32,7 @@ class Motion(object):
         self.extract_joint_names()
         self.get_joint_hierarchy_tree()
 
-        savepath = self.file_dir+self.filename.split('.')[0]
+        savepath = self.file_dir+self.filename.split('.')[0]+".pkl"
         if (not os.path.exists(savepath)) or re_load == True:
             print("First analysis start!!!")
             

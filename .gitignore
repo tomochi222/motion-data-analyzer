@@ -104,6 +104,7 @@ ENV/
 # additional
 *.ipynb
 *.csv
+*.pkl
 test.py
 
 sample/
