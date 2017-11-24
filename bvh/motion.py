@@ -14,22 +14,26 @@ import pandas as pd
 import pickle
 import os
 
+from motion_variables import MotionVariables
+
 class Motion(object):
-    def __init__(self, file_dir, filename):
+    def __init__(self, file_dir, filename, devise="optitrack", re_load=False):
         self.file_dir = file_dir
         self.filename = filename
+        self.devise = devise
 
         ext = filename.split('.')
         ext = ext[len(ext)-1]
         if ext == 'bvh':
             self.motion = bp.bvh(file_dir+filename)
             self.data_size = len(self.motion.data)
+            self.motion_variables = MotionVariables(self.devise)
 
         self.extract_joint_names()
         self.get_joint_hierarchy_tree()
 
         savepath = self.file_dir+self.filename.split('.')[0]
-        if not os.path.exists(savepath):
+        if (not os.path.exists(savepath)) or re_load == True:
             print("First analysis start!!!")
             
             self.create_joint_info_frame()
@@ -83,7 +87,12 @@ class Motion(object):
                 for tmp in rotation_order:
                     rotation_mat_tmp = np.dot(rotation_mat_tmp, get_rotation(tmp[len(tmp)-9],deg2rad(self.motion.data[tmp].values[frame])))
 
-            mat_tmp = get_simultaneous_matrix(rotation_mat_tmp,self.get_offsets(target))
+            if self.motion_variables.devise == "optitrack" and target == self.motion_variables.MOTIVE_BONE_NAMES[0]:
+                offsets = self.get_offsets_from_root_pos()
+            else:
+                offsets = self.get_offsets(target)
+            mat_tmp = get_simultaneous_matrix(rotation_mat_tmp,offsets)
+
             self.joint_info_mat[target].append([mat_tmp])
 
             for joint in self.joint_hierarchy:
@@ -215,6 +224,9 @@ class Motion(object):
 
     def get_time(self):
         return self.motion.data['time'].values
+
+    def get_offsets_from_root_pos(self):
+        return [0., self.motion.data["Hips-Yposition"].values[0], 0.]
 
     def save_to_csv(self, savename='tmp.csv'):
         self.joint_info_dataframe.to_csv(savename)

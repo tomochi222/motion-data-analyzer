@@ -115,6 +115,12 @@ def get_simultaneous_matrix(R, q):
                      [R[2,0], R[2,1], R[2,2], q[2]],
                      [0.,0.,0.,1]])
 
+def get_simultaneous_rotation_matrix(R):
+    return np.array([[R[0,0], R[0,1], R[0,2], 0.],
+                  [R[1,0], R[1,1], R[1,2], 0.],
+                  [R[2,0], R[2,1], R[2,2], 0.],
+                  [0.,0.,0.,1]])
+
 def get_simultaneous_trans_matrix(q):
     return np.array([[1., 0., 0., q[0]],
                      [0., 1., 0., q[1]],

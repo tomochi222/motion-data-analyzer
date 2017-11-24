@@ -1,8 +1,29 @@
 
 # coding: utf-8
 
+from coordinate_transform import *
+import numpy as np
+
 class MotionVariables(object):
-    def __init__(self):
+    def __init__(self, devise="optitrack"):
+        self.devise = devise
+        self.devise_list = ["optitrack", "perception_neuron"]
+
+        if self.devise in self.devise_list:
+            if self.devise == "optitrack":
+                # self.coordinate_trans_mat = get_simultaneous_rotation_matrix(get_rotation_x(np.pi/2))
+                self.scale = 1.0
+                self.azim = -90
+                self.elev = 113
+            elif self.devise == "perception_neuron":
+                # self.coordinate_trans_mat = get_simultaneous_rotation_matrix(get_rotation_x(np.pi/2))        
+                self.scale = 1/100
+                self.azim = 90
+                self.elev = -66.5
+        else:
+            print("Currently your sellect devise is not supporting")
+            exit()
+
         self.MOTIVE_BONE_NAMES = ['Hips', 'Spine', 'Spine1', 'Neck', 'Head',
                              'LeftShoulder', 'LeftArm', 'LeftForeArm',
                              'LeftHand', 'RightShoulder', 'RightArm',
