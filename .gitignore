@@ -108,3 +108,8 @@ ENV/
 test.py
 
 sample/
+
+*.txt
+*.pkl
+
+bvh/data/

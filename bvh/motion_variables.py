@@ -1,5 +1,4 @@
-
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 from coordinate_transform import *
 import numpy as np
@@ -60,7 +59,7 @@ class MotionVariables(object):
                                              'LeftInHandPinky','LeftHandPinky1',
                                              'LeftHandPinky2','LeftHandPinky3',]
 
-    def get_common_elemants(self, list1, list2):
+    def get_common_elements(self, list1, list2):
         matched_list = []
         for element1 in list1:
             matched_list+=filter(lambda element2: element2 == element1, list2)

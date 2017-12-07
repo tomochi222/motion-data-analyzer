@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 # parse bvh(BioVision Hierarchical) file for python 3
 import re
 import pandas as pd

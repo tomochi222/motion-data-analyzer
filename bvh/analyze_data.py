@@ -5,13 +5,17 @@ from motion import Motion
 from motion_variables import MotionVariables
 
 class BioAnalyze(MotionVariables):
-    def __init__(self, file_dir, filename, file_dir2='', filename2=''):
+    def __init__(self, file_dir, filename, file_dir2='', filename2='', save_dir="", devise="optitrack", re_load=False, bone_names=None):
         super().__init__()
 
-        self.COMMON_BONE_NAMES = self.get_common_elemants(self.MOTIVE_BONE_NAMES,self.PERCEPTION_NEURON_BONE_NAMES)
+        if bone_names is None:
+            self.COMMON_BONE_NAMES = self.get_common_elements(self.MOTIVE_BONE_NAMES,self.PERCEPTION_NEURON_BONE_NAMES)
+        else:
+            self.COMMON_BONE_NAMES = bone_names
 
-        self.motion1 = Motion(file_dir, filename)
-        self.motion1.save_to_csv()
+        self.motion1 = Motion(file_dir, filename, devise, re_load, bone_names=self.COMMON_BONE_NAMES)
+        savename = save_dir + filename.split('.')[0] + ".csv"
+        self.motion1.save_angle_data_to_csv(savename=savename)
         self.compare_available = False
         if not file_dir2 == '' and  not filename2 == '':
             self.motion2 = Motion(file_dir2, filename2)
@@ -28,7 +32,3 @@ class BioAnalyze(MotionVariables):
 
     def get_common_bone_names(self):
         return self.COMMON_BONE_NAMES
-
-analysis = BioAnalyze('data\\','test_optitrack.bvh')
-# analysis = BioAnalyze('data\\','test_neuron.bvh')
-# analysis = BioAnalyze('data\\','test_optitrack.bvh','data\\','test_neuron.bvh')

@@ -1,5 +1,4 @@
-
-# coding : utf-8
+# -*- coding: utf-8 -*-
 
 import bvh_parser as bp
 from coordinate_transform import *
@@ -17,10 +16,11 @@ import os
 from motion_variables import MotionVariables
 
 class Motion(object):
-    def __init__(self, file_dir, filename, devise="optitrack", re_load=False):
+    def __init__(self, file_dir, filename, devise="optitrack", re_load=False, bone_names=None):
         self.file_dir = file_dir
         self.filename = filename
         self.devise = devise
+        self.bone_names = bone_names
 
         ext = filename.split('.')
         ext = ext[len(ext)-1]
@@ -56,8 +56,28 @@ class Motion(object):
     def extract_joint_info(self):
         for joint in self.joint_info:
             mat = dict(self.joint_info)[joint][0]
-            self.pos_dict[joint] = get_position_info(mat)
-            self.axis_dict[joint], self.angle_dict[joint] = get_rotation_info(get_rotation_matrix(mat))
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    tmp, self.angle_dict[joint] = get_rotation_info(get_rotation_matrix(mat))
+                    self.pos_dict[joint] = get_position_info(mat)
+
+                    comp_axis = np.array([0., 0., 1.])
+                    axis_change_judge = np.dot(tmp, comp_axis)
+                    if axis_change_judge < 0.:
+                        self.axis_dict[joint] = -tmp
+                    else:
+                        self.axis_dict[joint] = tmp
+
+            else:
+                tmp, self.angle_dict[joint] = get_rotation_info(get_rotation_matrix(mat))
+                self.pos_dict[joint] = get_position_info(mat)
+
+                comp_axis = np.array([0., 0., 1.])
+                axis_change_judge = np.dot(tmp, comp_axis)
+                if axis_change_judge < 0.:
+                    self.axis_dict[joint] = -tmp
+                else:
+                    self.axis_dict[joint] = tmp
 
     def get_joint_info_matrix(self, joint_tree, frame):
         for target in joint_tree:
@@ -108,26 +128,46 @@ class Motion(object):
         
         print("Analyzing motion data ..", end="", flush=True)
         for joint in self.get_joint_names():
-            degree_lists[joint] = []
-            rotation_axis_vec_lists[joint] = []
-            position_lists[joint] = []
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    degree_lists[joint] = []
+                    rotation_axis_vec_lists[joint] = []
+                    position_lists[joint] = []
+            else:
+                degree_lists[joint] = []
+                rotation_axis_vec_lists[joint] = []
+                position_lists[joint] = []
 
         for i in range(self.data_size):
             if i%100 == 0:
                 print("..", end="", flush=True)
             self.get_joint_info(i)
             for joint in self.get_joint_names():
-                degree_lists[joint].append(self.angle_dict[joint])
-                rotation_axis_vec_lists[joint].append(self.axis_dict[joint])
-                position_lists[joint].append(self.pos_dict[joint])
+                if not self.bone_names is None:
+                    if joint in self.bone_names:
+                        degree_lists[joint].append(self.angle_dict[joint])
+                        rotation_axis_vec_lists[joint].append(self.axis_dict[joint])
+                        position_lists[joint].append(self.pos_dict[joint])
+                else:
+                    degree_lists[joint].append(self.angle_dict[joint])
+                    rotation_axis_vec_lists[joint].append(self.axis_dict[joint])
+                    position_lists[joint].append(self.pos_dict[joint])
+
         print("")
 
         tmp_dict = {}
         for joint in self.get_joint_names():
-            tmp_dict[joint+'-rotation'] = degree_lists[joint]
-            tmp_dict[joint+'-axis'] = rotation_axis_vec_lists[joint]
-            tmp_dict[joint+'-position'] = position_lists[joint]
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    tmp_dict[joint+'-rotation'] = degree_lists[joint]
+                    tmp_dict[joint+'-axis'] = rotation_axis_vec_lists[joint]
+                    tmp_dict[joint+'-position'] = position_lists[joint]
+            else:
+                tmp_dict[joint+'-rotation'] = degree_lists[joint]
+                tmp_dict[joint+'-axis'] = rotation_axis_vec_lists[joint]
+                tmp_dict[joint+'-position'] = position_lists[joint]
         self.joint_info_dataframe = pd.DataFrame.from_dict(tmp_dict)
+        self.joint_info_dataframe['time'] = self.get_time()
         print("analysis ended!!!")
 
     def get_joint_hierarchy_tree(self):
@@ -198,17 +238,25 @@ class Motion(object):
     def get_offsets(self, joint):
         return self.motion.skeleton[joint]['offsets']
 
-    def get_axis(self, joint):
-        return self.joint_info_dataframe[joint+'-axis'].values
+    def get_axis(self, joint, frame):
+        if joint+'-axis' in self.joint_info_dataframe:
+            return self.joint_info_dataframe[joint+'-axis'].values[frame]
+        return None
 
-    def get_angle(self, joint):
-        return self.joint_info_dataframe[joint+'-rotation'].values
+    def get_angle(self, joint, frame):
+        if joint+'-rotation' in self.joint_info_dataframe:
+            return self.joint_info_dataframe[joint+'-rotation'].values[frame]
+        return None
 
     def get_position(self, joint, frame, scale):
-        return self.joint_info_dataframe[joint+'-position'].values[frame]*scale
+        if joint+'-position' in self.joint_info_dataframe:
+            return self.joint_info_dataframe[joint+'-position'].values[frame]*scale
+        return None
 
     def get_joint_position(self, joint, scale):
-        return self.pos_dict[joint]*scale
+        if joint in self.pos_dict:
+            return self.pos_dict[joint]*scale
+        return None
 
     def extract_joint_names(self):
         self.joint_names = []
@@ -225,29 +273,43 @@ class Motion(object):
     def get_time(self):
         return self.motion.data['time'].values
 
-    def get_offsets_from_root_pos(self):
-        return [0., self.motion.data["Hips-Yposition"].values[0], 0.]
-
     def save_to_csv(self, savename='tmp.csv'):
         self.joint_info_dataframe.to_csv(savename)
 
     def save_angle_data_to_csv(self, savename="tmp.csv"):
         angle_df = self.joint_info_dataframe.copy()
         for joint in self.get_joint_names():
-            del angle_df[joint+'-axis']
-            del angle_df[joint+'-position']
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    del angle_df[joint+'-axis']
+                    del angle_df[joint+'-position']
+            else:
+                del angle_df[joint+'-axis']
+                del angle_df[joint+'-position']
+
         angle_df.to_csv(savename)
 
     def save_axis_data_to_csv(self, savename="tmp.csv"):
         axis_df = self.joint_info_dataframe.copy()
         for joint in self.get_joint_names():
-            del axis_df[joint+'-rotation']
-            del axis_df[joint+'-position']
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    del axis_df[joint+'-rotation']
+                    del axis_df[joint+'-position']
+            else:
+                del axis_df[joint+'-rotation']
+                del axis_df[joint+'-position']
+
         axis_df.to_csv(savename)
 
     def save_position_data_to_csv(self, savename="tmp.csv"):
         pos_df = self.joint_info_dataframe.copy()
         for joint in self.get_joint_names():
-            del pos_df[joint+'-axis']
-            del pos_df[joint+'-rotation']
+            if not self.bone_names is None:
+                if joint in self.bone_names:
+                    del pos_df[joint+'-axis']
+                    del pos_df[joint+'-rotation']
+            else:
+                del pos_df[joint+'-axis']
+                del pos_df[joint+'-rotation']
         pos_df.to_csv(savename)
